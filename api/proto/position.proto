@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package position;
+option go_package = "./generated";
+
+enum PositionType {
+  Short = 0;
+  Long = 1;
+}
+
+message Position {
+    string guid = 1;
+    PositionType positionType = 2;
+    string coin = 3;
+    bytes amount = 4;
+}
+
+
+message GetPositionsRequest {}
+message GetPositionsResponse {
+	repeated Position positions = 1;
+}
+
+message GetPositionRequest {
+  string guid = 1;
+}
+message GetPositionResponse {
+	Position position = 1;
+}
+
+
+service PositionService 
+{
+    rpc GetPositions(GetPositionsRequest) returns (GetPositionsResponse) {};
+    rpc GetPosition(GetPositionRequest) returns (GetPositionResponse) {};
+}
