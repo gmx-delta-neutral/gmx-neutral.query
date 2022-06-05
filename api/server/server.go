@@ -5,7 +5,9 @@ import (
 	"net"
 
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/generated"
+	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/infrastructure"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/position"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -14,8 +16,10 @@ func StartServer() {
 	if err != nil {
 		log.Fatalf("Failed to listen %v", err)
 	}
+	logger := infrastructure.NewLogger()
+	interceptors := infrastructure.NewInterceptors(logger)
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor(), interceptors.LoggingInterceptor()))
 	positionServer := NewPositionServer(position.NewService(position.NewRepository()))
 	generated.RegisterPositionServiceServer(s, positionServer)
 
