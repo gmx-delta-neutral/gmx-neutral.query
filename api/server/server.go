@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net"
-	"os"
 
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/generated"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/infrastructure"
@@ -54,29 +53,32 @@ func newExporter(w io.Writer) (trace.SpanExporter, error) {
 }
 
 func StartServer() {
-	l := log.New(os.Stdout, "", 0)
-
-	// Write telemetry data to a file.
-	f, err := os.Create("traces.txt")
+	ctx := context.Background()
+	exp, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
-		l.Fatal(err)
-	}
-	defer f.Close()
-
-	exp, err := newExporter(f)
-	if err != nil {
-		l.Fatal(err)
+		panic(err)
 	}
 
-	tp := trace.NewTracerProvider(
-		trace.WithBatcher(exp),
+	resource := resource.NewWithAttributes(
+		semconv.SchemaURL,
+		semconv.ServiceNameKey.String("gmx-neutral.query"),
+		semconv.ServiceVersionKey.String("1.0.0"),
+		semconv.DeploymentEnvironmentKey.String("production"),
 	)
+
+	provider := trace.NewTracerProvider(
+		trace.WithBatcher(exp),
+		trace.WithResource(resource),
+	)
+
 	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			l.Fatal(err)
+		if err := provider.Shutdown(ctx); err != nil {
+			log.Println(err)
 		}
 	}()
-	otel.SetTracerProvider(tp)
+
+	otel.SetTracerProvider(provider)
+
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("Failed to listen %v", err)
