@@ -4,7 +4,7 @@
 // - protoc             v3.19.4
 // source: price.proto
 
-package generated
+package api
 
 import (
 	context "context"

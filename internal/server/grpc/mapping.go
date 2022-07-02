@@ -1,12 +1,12 @@
 package grpc_server
 
 import (
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/generated"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
+	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 )
 
-func TokenPositionDto(p model.TokenPosition) *generated.TokenPosition {
-	return &generated.TokenPosition{
+func TokenPositionDto(p model.TokenPosition) *api.TokenPosition {
+	return &api.TokenPosition{
 		TokenAddress: p.TokenAddress.String(),
 		Symbol:       p.Symbol,
 		Balance:      p.Balance.Bytes(),
@@ -14,8 +14,8 @@ func TokenPositionDto(p model.TokenPosition) *generated.TokenPosition {
 	}
 }
 
-func GlpAssetDto(p model.GlpAsset) *generated.GlpAsset {
-	return &generated.GlpAsset{
+func GlpAssetDto(p model.GlpAsset) *api.GlpAsset {
+	return &api.GlpAsset{
 		Symbol:     p.Symbol,
 		PoolAmount: p.PoolAmount.Bytes(),
 		Weight:     p.Weight.Bytes(),

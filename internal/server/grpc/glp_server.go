@@ -3,8 +3,8 @@ package grpc_server
 import (
 	"context"
 
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/generated"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/glp"
+	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 )
 
 func NewGlpServer(glpService glp.Service) *GlpServer {
@@ -17,9 +17,9 @@ type GlpServer struct {
 	glpService glp.Service
 }
 
-func (p *GlpServer) GetGlpAssets(ctx context.Context, request *generated.GetGlpAssetsRequest) (*generated.GetGlpAssetsResponse, error) {
-	glpAssetsResponse := []*generated.GlpAsset{}
-	res := generated.GetGlpAssetsResponse{
+func (p *GlpServer) GetGlpAssets(ctx context.Context, request *api.GetGlpAssetsRequest) (*api.GetGlpAssetsResponse, error) {
+	glpAssetsResponse := []*api.GlpAsset{}
+	res := api.GetGlpAssetsResponse{
 		Assets: glpAssetsResponse,
 	}
 

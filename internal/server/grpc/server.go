@@ -6,11 +6,11 @@ import (
 	"log"
 	"net"
 
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/generated"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/glp"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/infrastructure"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/price"
 	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/token"
+	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -93,9 +93,9 @@ func StartServer() {
 	token_server := NewTokenServer(token.NewService(token.NewRepository()))
 	glp_server := NewGlpServer(glp.NewService(glp.NewRepository()))
 	price_server := NewPriceServer(price.NewPriceService(price.NewPriceRepository()))
-	generated.RegisterPositionServiceServer(s, token_server)
-	generated.RegisterGlpServiceServer(s, glp_server)
-	generated.RegisterPriceServiceServer(s, price_server)
+	api.RegisterPositionServiceServer(s, token_server)
+	api.RegisterGlpServiceServer(s, glp_server)
+	api.RegisterPriceServiceServer(s, price_server)
 
 	log.Println("Listening on port 50051")
 
