@@ -1,4 +1,4 @@
-module github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query
+module github.com/gmx-delta-neutral/gmx-neutral.query
 
 go 1.18
 

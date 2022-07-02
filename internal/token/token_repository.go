@@ -5,13 +5,13 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 )
 
 type Repository interface {

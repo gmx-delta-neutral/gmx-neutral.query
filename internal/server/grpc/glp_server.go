@@ -3,8 +3,8 @@ package grpc_server
 import (
 	"context"
 
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/glp"
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/pkg/api"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/glp"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 )
 
 func NewGlpServer(glpService glp.Service) *GlpServer {

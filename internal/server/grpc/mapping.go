@@ -1,8 +1,8 @@
 package grpc_server
 
 import (
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/pkg/api"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 )
 
 func TokenPositionDto(p model.TokenPosition) *api.TokenPosition {

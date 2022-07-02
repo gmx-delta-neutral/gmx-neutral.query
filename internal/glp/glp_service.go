@@ -1,7 +1,7 @@
 package glp
 
 import (
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 )
 
 type Service interface {

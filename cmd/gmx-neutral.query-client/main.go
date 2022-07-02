@@ -6,9 +6,9 @@ import (
 	"log"
 	"math/big"
 
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/generated"
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/infrastructure"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/infrastructure"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
@@ -31,12 +31,12 @@ func main() {
 	}
 	defer conn.Close()
 
-	c := generated.NewPositionServiceClient(conn)
-	g := generated.NewGlpServiceClient(conn)
-	p := generated.NewPriceServiceClient(conn)
+	c := api.NewPositionServiceClient(conn)
+	g := api.NewGlpServiceClient(conn)
+	p := api.NewPriceServiceClient(conn)
 
 	// create request
-	req := generated.GetTokenPositionRequest{
+	req := api.GetTokenPositionRequest{
 		TokenAddress: "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
 	}
 
@@ -48,7 +48,7 @@ func main() {
 
 	fmt.Println(res.TokenPosition)
 
-	glpReq := generated.GetGlpAssetsRequest{}
+	glpReq := api.GetGlpAssetsRequest{}
 
 	glpRes, err := g.GetGlpAssets(context.Background(), &glpReq)
 	if err != nil {
@@ -57,7 +57,7 @@ func main() {
 
 	fmt.Println(glpRes)
 
-	tokenPriceReq := generated.GetTokenPriceRequest{
+	tokenPriceReq := api.GetTokenPriceRequest{
 		Address: common.HexToAddress("0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab").Bytes(),
 	}
 

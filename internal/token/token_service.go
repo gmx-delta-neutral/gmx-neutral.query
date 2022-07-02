@@ -1,9 +1,9 @@
 package token
 
 import (
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/glp"
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/glp"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 )
 
 type Service interface {

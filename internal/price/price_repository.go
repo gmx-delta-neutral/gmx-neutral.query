@@ -4,10 +4,10 @@ import (
 	"context"
 	"math/big"
 
-	pricefeed "github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/contracts/price_feed"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	pricefeed "github.com/gmx-delta-neutral/gmx-neutral.query/internal/contracts/price_feed"
 )
 
 type Repository interface {

@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 )

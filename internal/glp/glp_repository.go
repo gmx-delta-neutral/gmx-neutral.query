@@ -5,12 +5,12 @@ import (
 	"log"
 	"math/big"
 
-	vaultreader "github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/contracts/vault_reader"
-	"github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/model"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/ethclient"
+	vaultreader "github.com/gmx-delta-neutral/gmx-neutral.query/internal/contracts/vault_reader"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 )
 
 const vaultPropsLength = 14
