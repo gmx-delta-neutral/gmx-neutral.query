@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package glp;
+option go_package = "./generated";
+
+message GetGlpAssetsRequest {}
+
+message GetGlpAssetsResponse {
+    repeated GlpAsset assets = 1;
+}
+
+message GlpAsset {
+    string symbol = 1; 
+    bytes poolAmount = 2;
+    bytes weight = 3;
+    bytes usdgAmount = 4;
+    bytes allocation = 5;
+}
+
+service GlpService
+{
+    rpc GetGlpAssets(GetGlpAssetsRequest) returns (GetGlpAssetsResponse) {};
+}

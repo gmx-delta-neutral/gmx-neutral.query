@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package token_position;
+option go_package = "./generated";
+
+message TokenPosition {
+  string tokenAddress = 1;
+  string symbol = 2;
+  bytes balance = 3;
+  int32 decimals = 4;
+}
+
+
+message GetTokenPositionRequest {
+  string tokenAddress = 1;
+}
+message GetTokenPositionResponse {
+	TokenPosition tokenPosition = 1;
+}
+
+
+service PositionService 
+{
+    rpc GetTokenPosition(GetTokenPositionRequest) returns (GetTokenPositionResponse) {};
+}

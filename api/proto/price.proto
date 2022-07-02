@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package glp;
+option go_package = "./generated";
+
+message GetTokenPriceRequest {
+    bytes address = 1;
+}
+
+message GetTokenPriceResponse {
+    bytes price = 1;
+}
+
+service PriceService
+{
+    rpc GetTokenPrice(GetTokenPriceRequest) returns (GetTokenPriceResponse) {};
+}

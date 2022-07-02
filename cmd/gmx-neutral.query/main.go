@@ -1,7 +1,7 @@
 package main
 
-import "github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/api/server"
+import grpc_server "github.com/RafGDev/gmx-delta-neutral/gmx-neutral.query/internal/server/grpc"
 
 func main() {
-	server.StartServer()
+	grpc_server.StartServer()
 }
