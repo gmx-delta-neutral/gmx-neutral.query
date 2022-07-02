@@ -5,13 +5,23 @@ import (
 	"github.com/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 )
 
-func TokenPositionDto(p model.TokenPosition) *api.TokenPosition {
+func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
 	return &api.TokenPosition{
 		TokenAddress: p.TokenAddress.String(),
 		Symbol:       p.Symbol,
 		Balance:      p.Balance.Bytes(),
 		Decimals:     p.Decimals,
 	}
+}
+
+func TokenPositionDtos(tokenPositions []*model.TokenPosition) []*api.TokenPosition {
+	tokenPositionDtos := []*api.TokenPosition{}
+
+	for _, tokenPosition := range tokenPositions {
+		tokenPositionDtos = append(tokenPositionDtos, TokenPositionDto(tokenPosition))
+	}
+
+	return tokenPositionDtos
 }
 
 func GlpAssetDto(p model.GlpAsset) *api.GlpAsset {

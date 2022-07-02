@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PositionServiceClient interface {
+	GetTokenPositions(ctx context.Context, in *GetTokenPositionsRequest, opts ...grpc.CallOption) (*GetTokenPositionsResponse, error)
 	GetTokenPosition(ctx context.Context, in *GetTokenPositionRequest, opts ...grpc.CallOption) (*GetTokenPositionResponse, error)
 }
 
@@ -31,6 +32,15 @@ type positionServiceClient struct {
 
 func NewPositionServiceClient(cc grpc.ClientConnInterface) PositionServiceClient {
 	return &positionServiceClient{cc}
+}
+
+func (c *positionServiceClient) GetTokenPositions(ctx context.Context, in *GetTokenPositionsRequest, opts ...grpc.CallOption) (*GetTokenPositionsResponse, error) {
+	out := new(GetTokenPositionsResponse)
+	err := c.cc.Invoke(ctx, "/token_position.PositionService/GetTokenPositions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *positionServiceClient) GetTokenPosition(ctx context.Context, in *GetTokenPositionRequest, opts ...grpc.CallOption) (*GetTokenPositionResponse, error) {
@@ -46,6 +56,7 @@ func (c *positionServiceClient) GetTokenPosition(ctx context.Context, in *GetTok
 // All implementations should embed UnimplementedPositionServiceServer
 // for forward compatibility
 type PositionServiceServer interface {
+	GetTokenPositions(context.Context, *GetTokenPositionsRequest) (*GetTokenPositionsResponse, error)
 	GetTokenPosition(context.Context, *GetTokenPositionRequest) (*GetTokenPositionResponse, error)
 }
 
@@ -53,6 +64,9 @@ type PositionServiceServer interface {
 type UnimplementedPositionServiceServer struct {
 }
 
+func (UnimplementedPositionServiceServer) GetTokenPositions(context.Context, *GetTokenPositionsRequest) (*GetTokenPositionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTokenPositions not implemented")
+}
 func (UnimplementedPositionServiceServer) GetTokenPosition(context.Context, *GetTokenPositionRequest) (*GetTokenPositionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTokenPosition not implemented")
 }
@@ -66,6 +80,24 @@ type UnsafePositionServiceServer interface {
 
 func RegisterPositionServiceServer(s grpc.ServiceRegistrar, srv PositionServiceServer) {
 	s.RegisterService(&PositionService_ServiceDesc, srv)
+}
+
+func _PositionService_GetTokenPositions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTokenPositionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PositionServiceServer).GetTokenPositions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/token_position.PositionService/GetTokenPositions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PositionServiceServer).GetTokenPositions(ctx, req.(*GetTokenPositionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _PositionService_GetTokenPosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -93,6 +125,10 @@ var PositionService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "token_position.PositionService",
 	HandlerType: (*PositionServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetTokenPositions",
+			Handler:    _PositionService_GetTokenPositions_Handler,
+		},
 		{
 			MethodName: "GetTokenPosition",
 			Handler:    _PositionService_GetTokenPosition_Handler,

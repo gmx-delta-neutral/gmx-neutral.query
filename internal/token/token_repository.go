@@ -15,7 +15,8 @@ import (
 )
 
 type Repository interface {
-	GetTokenPosition(address common.Address) (model.TokenPosition, error)
+	GetTokenPositions() ([]*model.TokenPosition, error)
+	GetTokenPosition(address common.Address) (*model.TokenPosition, error)
 }
 
 type TokenPositionModel struct {
@@ -29,14 +30,12 @@ type TokenPositionModel struct {
 type tokenRepository struct{}
 
 func NewRepository() Repository {
-	return tokenRepository{}
+	return &tokenRepository{}
 }
 
 var walletAddress = common.HexToAddress("0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664")
 
-func (repository tokenRepository) GetTokenPosition(ercAddress common.Address) (model.TokenPosition, error) {
-	position := model.TokenPosition{}
-
+func (repository *tokenRepository) GetTokenPosition(ercAddress common.Address) (*model.TokenPosition, error) {
 	cfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithRegion("us-east-1"),
 		config.WithEndpointResolver(aws.EndpointResolverFunc(
@@ -46,7 +45,7 @@ func (repository tokenRepository) GetTokenPosition(ercAddress common.Address) (m
 	)
 
 	if err != nil {
-		return position, err
+		return nil, err
 	}
 
 	svc := dynamodb.NewFromConfig(cfg)
@@ -60,24 +59,24 @@ func (repository tokenRepository) GetTokenPosition(ercAddress common.Address) (m
 	})
 
 	if err != nil {
-		return position, err
+		return nil, err
 	}
 
-	positionModel := TokenPositionModel{}
+	positionModel := &TokenPositionModel{}
 
-	err = attributevalue.UnmarshalMap(out.Item, &positionModel)
+	err = attributevalue.UnmarshalMap(out.Item, positionModel)
 
 	if err != nil {
-		return position, err
+		return nil, err
 	}
 
 	balance, success := new(big.Int).SetString(positionModel.Balance, 10)
 
 	if !success {
-		return position, errors.New("Not successful")
+		return nil, errors.New("Not successful")
 	}
 
-	position = model.TokenPosition{
+	position := &model.TokenPosition{
 		TokenAddress:  common.HexToAddress(positionModel.TokenAddress),
 		WalletAddress: common.HexToAddress(positionModel.TokenAddress),
 		Symbol:        positionModel.Symbol,
@@ -86,4 +85,58 @@ func (repository tokenRepository) GetTokenPosition(ercAddress common.Address) (m
 	}
 
 	return position, nil
+}
+
+func (repository *tokenRepository) GetTokenPositions() ([]*model.TokenPosition, error) {
+	cfg, err := config.LoadDefaultConfig(context.Background(),
+		config.WithRegion("us-east-1"),
+		config.WithEndpointResolver(aws.EndpointResolverFunc(
+			func(service, region string) (aws.Endpoint, error) {
+				return aws.Endpoint{URL: "http://localhost:8000"}, nil
+			})),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	svc := dynamodb.NewFromConfig(cfg)
+
+	out, err := svc.Scan(context.TODO(), &dynamodb.ScanInput{
+		TableName: aws.String("TokenPositions"),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	positionsModel := []*TokenPositionModel{}
+
+	err = attributevalue.UnmarshalListOfMaps(out.Items, positionsModel)
+
+	if err != nil {
+		return nil, err
+	}
+
+	positions := []*model.TokenPosition{}
+
+	for _, positionModel := range positionsModel {
+		balance, success := new(big.Int).SetString(positionModel.Balance, 10)
+
+		if !success {
+			return nil, errors.New("Not successful")
+		}
+
+		position := &model.TokenPosition{
+			TokenAddress:  common.HexToAddress(positionModel.TokenAddress),
+			WalletAddress: common.HexToAddress(positionModel.TokenAddress),
+			Symbol:        positionModel.Symbol,
+			Balance:       *balance,
+			Decimals:      positionModel.Decimals,
+		}
+
+		positions = append(positions, position)
+	}
+
+	return positions, nil
 }

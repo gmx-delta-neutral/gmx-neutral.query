@@ -7,7 +7,8 @@ import (
 )
 
 type Service interface {
-	GetTokenPosition(tokenAddress common.Address) (model.TokenPosition, error)
+	GetTokenPositions() ([]*model.TokenPosition, error)
+	GetTokenPosition(tokenAddress common.Address) (*model.TokenPosition, error)
 }
 
 type tokenService struct {
@@ -19,27 +20,22 @@ func NewService(tokenRepository Repository) Service {
 	return &tokenService{tokenRepository: tokenRepository}
 }
 
-func (service *tokenService) GetTokenPosition(tokenAddress common.Address) (model.TokenPosition, error) {
+func (service *tokenService) GetTokenPosition(tokenAddress common.Address) (*model.TokenPosition, error) {
 	position, err := service.tokenRepository.GetTokenPosition(tokenAddress)
 
 	if err != nil {
-		return position, err
+		return nil, err
 	}
 
-	// glp_assets, err := service.glpRepository.GetGlpAssets()
+	return position, err
+}
 
-	// if err != nil {
-	// 	return position, err
-	// }
+func (service *tokenService) GetTokenPositions() ([]*model.TokenPosition, error) {
+	position, err := service.tokenRepository.GetTokenPositions()
 
-	// current_price := big.NewInt(0)
-	// for _, glp_asset := range glp_assets {
-	// 	if glp_asset.TokenAddress == tokenAddress {
-	// 		current_price := glp_asset.
-	// 	}
-
-	// }
-	// position.PNL =
+	if err != nil {
+		return nil, err
+	}
 
 	return position, err
 }

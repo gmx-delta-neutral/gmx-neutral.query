@@ -18,8 +18,16 @@ message GetTokenPositionResponse {
 	TokenPosition tokenPosition = 1;
 }
 
+message GetTokenPositionsRequest {
+  string tokenAddress = 1;
+}
+message GetTokenPositionsResponse {
+	repeated TokenPosition tokenPositions = 1;
+}
+
 
 service PositionService 
 {
+    rpc GetTokenPositions(GetTokenPositionsRequest) returns (GetTokenPositionsResponse) {};
     rpc GetTokenPosition(GetTokenPositionRequest) returns (GetTokenPositionResponse) {};
 }
