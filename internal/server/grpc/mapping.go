@@ -9,8 +9,9 @@ func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
 	return &api.TokenPosition{
 		TokenAddress: p.TokenAddress.String(),
 		Symbol:       p.Symbol,
-		Balance:      p.Balance.Bytes(),
-		Decimals:     p.Decimals,
+		Amount:       p.Amount.Bytes(),
+		Worth:        p.Worth.Bytes(),
+		Pnl:          p.PNL.Bytes(),
 	}
 }
 

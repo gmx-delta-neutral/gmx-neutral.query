@@ -28,6 +28,7 @@ func (p *TokenServer) GetTokenPositions(ctx context.Context, request *api.GetTok
 	tokenPositionsResponse := api.GetTokenPositionsResponse{
 		TokenPositions: TokenPositionDtos(tokenPosition),
 	}
+
 	return &tokenPositionsResponse, nil
 }
 

@@ -69,4 +69,17 @@ func main() {
 
 	price := new(big.Int).SetBytes(tokenPriceRes.Price)
 	fmt.Println(price)
+
+	tokenPositionReq := api.GetTokenPositionRequest{
+		TokenAddress: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+	}
+
+	tokenPositionRes, err := c.GetTokenPosition(context.Background(), &tokenPositionReq)
+	if err != nil {
+		log.Fatalf("request failed: %v", err)
+	}
+
+	fmt.Println(new(big.Int).SetBytes(tokenPositionRes.TokenPosition.Amount).String())
+	fmt.Println(new(big.Int).SetBytes(tokenPositionRes.TokenPosition.Pnl).String())
+	fmt.Println(new(big.Int).SetBytes(tokenPositionRes.TokenPosition.Worth).String())
 }

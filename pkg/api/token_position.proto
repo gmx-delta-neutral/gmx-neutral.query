@@ -6,8 +6,9 @@ option go_package = "./api";
 message TokenPosition {
   string tokenAddress = 1;
   string symbol = 2;
-  bytes balance = 3;
-  int32 decimals = 4;
+  bytes amount = 3;
+  bytes worth = 4;
+  bytes pnl = 5;
 }
 
 

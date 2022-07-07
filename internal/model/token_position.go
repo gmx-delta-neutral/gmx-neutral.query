@@ -10,9 +10,9 @@ type TokenPosition struct {
 	TokenAddress  common.Address
 	WalletAddress common.Address
 	Symbol        string
-	Balance       big.Int
-	Decimals      int32
-	PNL           big.Int
+	Amount        *big.Int
+	Worth         *big.Int
+	PNL           *big.Int
 }
 
 type ShortPosition struct {

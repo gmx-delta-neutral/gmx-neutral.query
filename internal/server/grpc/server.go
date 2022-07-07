@@ -90,7 +90,7 @@ func StartServer() {
 	interceptors := infrastructure.NewInterceptors(logger)
 
 	s := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor(), interceptors.LoggingServerInterceptor()))
-	token_server := NewTokenServer(token.NewService(token.NewRepository()))
+	token_server := NewTokenServer(token.NewService(token.NewRepository(), price.NewPriceRepository()))
 	glp_server := NewGlpServer(glp.NewService(glp.NewRepository()))
 	price_server := NewPriceServer(price.NewPriceService(price.NewPriceRepository()))
 	api.RegisterPositionServiceServer(s, token_server)
