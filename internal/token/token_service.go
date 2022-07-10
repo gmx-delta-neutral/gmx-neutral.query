@@ -2,6 +2,7 @@ package token
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -52,17 +53,27 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 	}
 
 	amount := new(big.Int)
-	worth := new(big.Int)
-	pnl := new(big.Int)
+	costBasis := new(big.Int)
 
 	for _, transaction := range transactions {
-		transactionWorth := util.RemoveDecimals(new(big.Int).Mul(transaction.Amount, glpPrice), 18)
+		expandedPurchaseWorth := new(big.Int).Mul(transaction.Amount, transaction.PurchasePrice)
+		fmt.Println("Expanded Purchase Worth: %s", expandedPurchaseWorth)
+
 		purchaseWorth := util.RemoveDecimals(new(big.Int).Mul(transaction.Amount, transaction.PurchasePrice), 18)
-		transactionPnl := new(big.Int).Sub(transactionWorth, purchaseWorth)
+		fmt.Println("Purchase worth: %s", purchaseWorth)
 		amount = new(big.Int).Add(amount, transaction.Amount)
-		worth = new(big.Int).Add(worth, transactionWorth)
-		pnl = new(big.Int).Add(pnl, transactionPnl)
+		costBasis = new(big.Int).Add(costBasis, purchaseWorth)
 	}
+
+	fmt.Println("Cost basis:  %s", costBasis)
+	fmt.Println("Amount:  %s", amount)
+	fmt.Println("Glp price: %s", glpPrice)
+
+	worth := util.RemoveDecimals(new(big.Int).Mul(amount, glpPrice), 18)
+	pnl := new(big.Int).Sub(worth, costBasis)
+
+	fmt.Println("Worth: %s", worth)
+	fmt.Println("Pnl: %s", pnl)
 
 	position := &model.TokenPosition{
 		TokenAddress:  tokenAddress,
@@ -70,7 +81,9 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 		Symbol:        "BTC",
 		Amount:        amount,
 		Worth:         worth,
+		CostBasis:     costBasis,
 		PNL:           pnl,
+		PNLPercentage: new(big.Float).SetInt(pnl).Quo(new(big.Float).SetInt(costBasis)),
 	}
 
 	return position, err

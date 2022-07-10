@@ -11,8 +11,10 @@ type TokenPosition struct {
 	WalletAddress common.Address
 	Symbol        string
 	Amount        *big.Int
+	CostBasis     *big.Int
 	Worth         *big.Int
 	PNL           *big.Int
+	PNLPercentage *big.Float
 }
 
 type ShortPosition struct {

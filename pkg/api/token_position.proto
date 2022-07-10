@@ -9,8 +9,8 @@ message TokenPosition {
   bytes amount = 3;
   bytes worth = 4;
   bytes pnl = 5;
+  string pnlPercentage = 6;
 }
-
 
 message GetTokenPositionRequest {
   string tokenAddress = 1;

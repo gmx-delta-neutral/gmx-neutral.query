@@ -7,11 +7,12 @@ import (
 
 func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
 	return &api.TokenPosition{
-		TokenAddress: p.TokenAddress.String(),
-		Symbol:       p.Symbol,
-		Amount:       p.Amount.Bytes(),
-		Worth:        p.Worth.Bytes(),
-		Pnl:          p.PNL.Bytes(),
+		TokenAddress:  p.TokenAddress.String(),
+		Symbol:        p.Symbol,
+		Amount:        p.Amount.Bytes(),
+		Worth:         p.Worth.Bytes(),
+		Pnl:           p.PNL.Bytes(),
+		PnlPercentage: p.PNLPercentage.String(),
 	}
 }
 
