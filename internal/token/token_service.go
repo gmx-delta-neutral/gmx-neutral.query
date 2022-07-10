@@ -83,7 +83,7 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 		Worth:         worth,
 		CostBasis:     costBasis,
 		PNL:           pnl,
-		PNLPercentage: new(big.Float).SetInt(pnl).Quo(new(big.Float).SetInt(costBasis)),
+		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(costBasis)),
 	}
 
 	return position, err
