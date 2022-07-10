@@ -1,6 +1,7 @@
 package token
 
 import (
+	"errors"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -23,7 +24,23 @@ func NewService(tokenRepository Repository, priceRepository price.Repository) Se
 	return &tokenService{tokenRepository: tokenRepository, priceRepository: priceRepository}
 }
 
+var glpToken = common.HexToAddress("0x01234181085565ed162a948b6a5e88758CD7c7b8")
+
+type TokenPositionHandler = func(common.Address) (*model.TokenPosition, error)
+
+var tokenPositionHandlerMappings = map[common.Address]func(*tokenService) (*model.TokenPosition, error){
+	glpToken: func(service *tokenService) (*model.TokenPosition, error) { return service.getGlpPosition(glpToken) },
+}
+
 func (service *tokenService) GetTokenPosition(tokenAddress common.Address) (*model.TokenPosition, error) {
+	if tokenPositionHandler, ok := tokenPositionHandlerMappings[tokenAddress]; ok {
+		return tokenPositionHandler(service)
+	}
+
+	return nil, errors.New("Token mapping not foundd")
+}
+
+func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model.TokenPosition, error) {
 	glpPrice, err := service.priceRepository.GetGlpPrice()
 	if err != nil {
 		return nil, err
@@ -57,16 +74,19 @@ func (service *tokenService) GetTokenPosition(tokenAddress common.Address) (*mod
 	}
 
 	return position, err
+
 }
 
 func (service *tokenService) GetTokenPositions() ([]*model.TokenPosition, error) {
-	// position, err := service.tokenRepository.GetTokenPositions()
+	tokenPositions := []*model.TokenPosition{}
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	for _, handler := range tokenPositionHandlerMappings {
+		tokenPosition, err := handler(service)
+		if err != nil {
+			return nil, err
+		}
+		tokenPositions = append(tokenPositions, tokenPosition)
+	}
 
-	// return position, err
-
-	return []*model.TokenPosition{}, nil
+	return tokenPositions, nil
 }
