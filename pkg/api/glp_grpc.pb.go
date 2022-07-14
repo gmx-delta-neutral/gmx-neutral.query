@@ -35,7 +35,7 @@ func NewGlpServiceClient(cc grpc.ClientConnInterface) GlpServiceClient {
 
 func (c *glpServiceClient) GetGlpAssets(ctx context.Context, in *GetGlpAssetsRequest, opts ...grpc.CallOption) (*GetGlpAssetsResponse, error) {
 	out := new(GetGlpAssetsResponse)
-	err := c.cc.Invoke(ctx, "/glp.GlpService/GetGlpAssets", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gmx.neutral.query.api.GlpService/GetGlpAssets", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func _GlpService_GetGlpAssets_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/glp.GlpService/GetGlpAssets",
+		FullMethod: "/gmx.neutral.query.api.GlpService/GetGlpAssets",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GlpServiceServer).GetGlpAssets(ctx, req.(*GetGlpAssetsRequest))
@@ -90,7 +90,7 @@ func _GlpService_GetGlpAssets_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GlpService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "glp.GlpService",
+	ServiceName: "gmx.neutral.query.api.GlpService",
 	HandlerType: (*GlpServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

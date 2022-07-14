@@ -35,7 +35,7 @@ func NewPriceServiceClient(cc grpc.ClientConnInterface) PriceServiceClient {
 
 func (c *priceServiceClient) GetTokenPrice(ctx context.Context, in *GetTokenPriceRequest, opts ...grpc.CallOption) (*GetTokenPriceResponse, error) {
 	out := new(GetTokenPriceResponse)
-	err := c.cc.Invoke(ctx, "/glp.PriceService/GetTokenPrice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gmx.neutral.query.api.PriceService/GetTokenPrice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func _PriceService_GetTokenPrice_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/glp.PriceService/GetTokenPrice",
+		FullMethod: "/gmx.neutral.query.api.PriceService/GetTokenPrice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PriceServiceServer).GetTokenPrice(ctx, req.(*GetTokenPriceRequest))
@@ -90,7 +90,7 @@ func _PriceService_GetTokenPrice_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PriceService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "glp.PriceService",
+	ServiceName: "gmx.neutral.query.api.PriceService",
 	HandlerType: (*PriceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

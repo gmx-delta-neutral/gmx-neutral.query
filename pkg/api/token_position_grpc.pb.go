@@ -36,7 +36,7 @@ func NewPositionServiceClient(cc grpc.ClientConnInterface) PositionServiceClient
 
 func (c *positionServiceClient) GetTokenPositions(ctx context.Context, in *GetTokenPositionsRequest, opts ...grpc.CallOption) (*GetTokenPositionsResponse, error) {
 	out := new(GetTokenPositionsResponse)
-	err := c.cc.Invoke(ctx, "/token_position.PositionService/GetTokenPositions", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gmx.neutral.query.api.PositionService/GetTokenPositions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *positionServiceClient) GetTokenPositions(ctx context.Context, in *GetTo
 
 func (c *positionServiceClient) GetTokenPosition(ctx context.Context, in *GetTokenPositionRequest, opts ...grpc.CallOption) (*GetTokenPositionResponse, error) {
 	out := new(GetTokenPositionResponse)
-	err := c.cc.Invoke(ctx, "/token_position.PositionService/GetTokenPosition", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gmx.neutral.query.api.PositionService/GetTokenPosition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func _PositionService_GetTokenPositions_Handler(srv interface{}, ctx context.Con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/token_position.PositionService/GetTokenPositions",
+		FullMethod: "/gmx.neutral.query.api.PositionService/GetTokenPositions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PositionServiceServer).GetTokenPositions(ctx, req.(*GetTokenPositionsRequest))
@@ -110,7 +110,7 @@ func _PositionService_GetTokenPosition_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/token_position.PositionService/GetTokenPosition",
+		FullMethod: "/gmx.neutral.query.api.PositionService/GetTokenPosition",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PositionServiceServer).GetTokenPosition(ctx, req.(*GetTokenPositionRequest))
@@ -122,7 +122,7 @@ func _PositionService_GetTokenPosition_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PositionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "token_position.PositionService",
+	ServiceName: "gmx.neutral.query.api.PositionService",
 	HandlerType: (*PositionServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

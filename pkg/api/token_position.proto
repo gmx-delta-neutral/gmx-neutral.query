@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package token_position;
+package gmx.neutral.query.api;
 option go_package = "./api";
 
 message TokenPosition {
