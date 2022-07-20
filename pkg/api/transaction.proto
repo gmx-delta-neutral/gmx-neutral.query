@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package gmx.neutral.query.api;
+option go_package = "./api";
+
+message Transaction {
+    string TransactionId    = 1; 
+    string TokenAddress     = 2; 
+    string WalletAddress    = 3; 
+    string Symbol           = 4;
+    bytes Amount           = 5; 
+    int32 Decimals         = 6; 
+    bytes CostBasis        = 7; 
+}
+
+message GetTransactionsRequest {
+}
+
+message GetTransactionsResponse {
+    repeated Transaction transactions = 1;
+}
+
+service TransactionService
+{
+    rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse) {};
+}

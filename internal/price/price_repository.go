@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	cfg "github.com/gmx-delta-neutral/gmx-neutral.query/internal/config"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/contracts/glp"
 	glpmanager "github.com/gmx-delta-neutral/gmx-neutral.query/internal/contracts/glp_manager"
 	pricefeed "github.com/gmx-delta-neutral/gmx-neutral.query/internal/contracts/price_feed"
@@ -19,10 +20,13 @@ type Repository interface {
 }
 
 type priceRepository struct {
+	config *cfg.Config
 }
 
-func NewPriceRepository() Repository {
-	return &priceRepository{}
+func NewPriceRepository(config *cfg.Config) Repository {
+	return &priceRepository{
+		config: config,
+	}
 }
 
 var glpManagerAddress = common.HexToAddress("0xe1ae4d4b06A5Fe1fc288f6B4CD72f9F8323B107F")
@@ -83,6 +87,6 @@ func (r *priceRepository) GetGlpPrice() (*big.Int, error) {
 		return nil, err
 	}
 
-	expandedGlpPrice := new(big.Int).Div(util.ExpandDecimals(aum, 18), supply)
+	expandedGlpPrice := new(big.Int).Div(util.ExpandDecimals(aum, r.config.Decimals.Usdc), supply)
 	return expandedGlpPrice, nil
 }

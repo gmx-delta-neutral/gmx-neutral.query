@@ -1,0 +1,23 @@
+addresses:
+  account: "0x75136202695581C9fD9a05280aFb6FbC6a6F7f06"
+  glp: "0x01234181085565ed162a948b6a5e88758CD7c7b8"
+  glpManager: "0xe1ae4d4b06A5Fe1fc288f6B4CD72f9F8323B107F"
+  rewardRouter: "0x82147c5a7e850ea4e28155df107f2590fd4ba327"
+  vaultUtils: "0x69818a5587cc49881ef618b1c509fb630a2afba5"
+  wavax: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+  wbtc: "0x50b7545627a5162f82a992c33b87adc75187b218"
+  weth: "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab"
+  usdc: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e"
+  priceFeed:
+    avaxUsd: "0x0A77230d17318075983913bC2145DB16C7366156" 
+    btcUsd: "0x2779D32d5166BAaa2B2b658333bA7e6Ec0C65743"
+    ethUsd: "0x976B3D034E162d8bD72D6b9C989d545b839003b0" 
+decimals:
+  usdc: 6
+  glp: 18
+  percentDivisor: 1000
+hashes:
+  addLiquidity: "0x38dc38b96482be64113daffd8d464ebda93e856b70ccfc605e69ccf892ab981e"
+chainId: 43114
+defaultSlippageAmount: 30
+

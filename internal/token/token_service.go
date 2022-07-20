@@ -6,8 +6,10 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
+	cfg "github.com/gmx-delta-neutral/gmx-neutral.query/internal/config"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/price"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/transaction"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/util"
 )
 
@@ -17,12 +19,19 @@ type Service interface {
 }
 
 type tokenService struct {
-	tokenRepository Repository
-	priceRepository price.Repository
+	config             *cfg.Config
+	tokenRepository    Repository
+	priceRepository    price.Repository
+	transactionService transaction.Service
 }
 
-func NewService(tokenRepository Repository, priceRepository price.Repository) Service {
-	return &tokenService{tokenRepository: tokenRepository, priceRepository: priceRepository}
+func NewService(config *cfg.Config, tokenRepository Repository, priceRepository price.Repository, transactionService transaction.Service) Service {
+	return &tokenService{
+		config:             config,
+		tokenRepository:    tokenRepository,
+		priceRepository:    priceRepository,
+		transactionService: transactionService,
+	}
 }
 
 var glpToken = common.HexToAddress("0x01234181085565ed162a948b6a5e88758CD7c7b8")
@@ -46,34 +55,32 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 	if err != nil {
 		return nil, err
 	}
-	transactions, err := service.tokenRepository.GetTokenTransactions(tokenAddress)
+
+	transactions, err := service.transactionService.GetGlpTransactions()
 
 	if err != nil {
 		return nil, err
 	}
 
 	amount := new(big.Int)
-	costBasis := new(big.Int)
+	totalCostBasis := new(big.Int)
 
-	for _, transaction := range transactions {
-		expandedPurchaseWorth := new(big.Int).Mul(transaction.Amount, transaction.PurchasePrice)
-		fmt.Println("Expanded Purchase Worth: %s", expandedPurchaseWorth)
-
-		purchaseWorth := util.RemoveDecimals(new(big.Int).Mul(transaction.Amount, transaction.PurchasePrice), 18)
-		fmt.Println("Purchase worth: %s", purchaseWorth)
+	for _, transaction := range *transactions {
 		amount = new(big.Int).Add(amount, transaction.Amount)
-		costBasis = new(big.Int).Add(costBasis, purchaseWorth)
+		totalCostBasis = new(big.Int).Add(totalCostBasis, transaction.CostBasis)
 	}
 
-	fmt.Println("Cost basis:  %s", costBasis)
-	fmt.Println("Amount:  %s", amount)
-	fmt.Println("Glp price: %s", glpPrice)
+	fmt.Printf("Cost basis:  %s\n", totalCostBasis)
+	fmt.Printf("Amount:  %s\n", amount)
+	fmt.Printf("Glp price: %s\n", glpPrice)
 
-	worth := util.RemoveDecimals(new(big.Int).Mul(amount, glpPrice), 18)
-	pnl := new(big.Int).Sub(worth, costBasis)
+	worth := util.RemoveDecimals(new(big.Int).Mul(amount, glpPrice), service.config.Decimals.Glp)
+	fmt.Printf("How much it is worth now: %s\n", worth)
+	fmt.Printf("What is the cost basis: %s\n", totalCostBasis)
+	pnl := new(big.Int).Sub(worth, totalCostBasis)
 
-	fmt.Println("Worth: %s", worth)
-	fmt.Println("Pnl: %s", pnl)
+	fmt.Printf("Worth: %s\n", worth)
+	fmt.Printf("Pnl: %s\n", pnl)
 
 	position := &model.TokenPosition{
 		TokenAddress:  tokenAddress,
@@ -81,9 +88,9 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 		Symbol:        "BTC",
 		Amount:        amount,
 		Worth:         worth,
-		CostBasis:     costBasis,
+		CostBasis:     totalCostBasis,
 		PNL:           pnl,
-		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(costBasis)),
+		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
 	}
 
 	return position, err

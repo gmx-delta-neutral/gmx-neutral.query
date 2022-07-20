@@ -35,3 +35,25 @@ func GlpAssetDto(p model.GlpAsset) *api.GlpAsset {
 		Allocation: p.Allocation.Bytes(),
 	}
 }
+
+func TransactionDto(t *model.Transaction) *api.Transaction {
+	return &api.Transaction{
+		TransactionId: t.TransactionId.String(),
+		TokenAddress:  t.TokenAddress.String(),
+		WalletAddress: t.WalletAddress.String(),
+		Symbol:        t.Symbol,
+		Amount:        t.Amount.Bytes(),
+		Decimals:      int32(t.Decimals),
+		CostBasis:     t.CostBasis.Bytes(),
+	}
+}
+
+func TransactionDtos(transactions []*model.Transaction) []*api.Transaction {
+	transactionDtos := []*api.Transaction{}
+
+	for _, transaction := range transactions {
+		transactionDtos = append(transactionDtos, TransactionDto(transaction))
+	}
+
+	return transactionDtos
+}

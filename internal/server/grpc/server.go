@@ -6,10 +6,13 @@ import (
 	"log"
 	"net"
 
+	"github.com/ethereum/go-ethereum/ethclient"
+	cfg "github.com/gmx-delta-neutral/gmx-neutral.query/internal/config"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/glp"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/infrastructure"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/price"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/token"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/transaction"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/pkg/api"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
@@ -20,6 +23,16 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"google.golang.org/grpc"
 )
+
+type server struct {
+	config *cfg.Config
+}
+
+func NewServer(config *cfg.Config) *server {
+	return &server{
+		config: config,
+	}
+}
 
 const ServiceName = "gmx-neutral.query"
 
@@ -54,9 +67,15 @@ func newExporter(w io.Writer) (trace.SpanExporter, error) {
 	)
 }
 
-func StartServer() {
+func (server server) StartServer() {
 	ctx := context.Background()
 	exp, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
+	if err != nil {
+		panic(err)
+	}
+
+	client, err := ethclient.Dial("https://api.avax.network/ext/bc/C/rpc")
+
 	if err != nil {
 		panic(err)
 	}
@@ -90,12 +109,27 @@ func StartServer() {
 	interceptors := infrastructure.NewInterceptors(logger)
 
 	s := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor(), interceptors.LoggingServerInterceptor()))
-	token_server := NewTokenServer(token.NewService(token.NewRepository(), price.NewPriceRepository()))
-	glp_server := NewGlpServer(glp.NewService(glp.NewRepository()))
-	price_server := NewPriceServer(price.NewPriceService(price.NewPriceRepository()))
+
+	token_repository := token.NewRepository(server.config)
+	price_repository := price.NewPriceRepository(server.config)
+	glpRepository := glp.NewRepository()
+	priceRepository := price.NewPriceRepository(server.config)
+
+	glpService := glp.NewService(glpRepository)
+	transaction_service := transaction.NewTransactionService(server.config, client)
+	transaction_service.GetGlpTransactions()
+	token_service := token.NewService(server.config, token_repository, price_repository, transaction_service)
+	priceService := price.NewPriceService(priceRepository)
+
+	token_server := NewTokenServer(token_service)
+	glp_server := NewGlpServer(glpService)
+	price_server := NewPriceServer(priceService)
+	transaction_server := NewTransactionServer(transaction_service)
+
 	api.RegisterPositionServiceServer(s, token_server)
 	api.RegisterGlpServiceServer(s, glp_server)
 	api.RegisterPriceServiceServer(s, price_server)
+	api.RegisterTransactionServiceServer(s, transaction_server)
 
 	log.Println("Listening on port 50051")
 

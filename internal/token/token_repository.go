@@ -1,23 +1,13 @@
 package token
 
 import (
-	"context"
-	"errors"
-	"math/big"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
-	"github.com/google/uuid"
+	cfg "github.com/gmx-delta-neutral/gmx-neutral.query/internal/config"
 )
 
 type Repository interface {
 	// GetTokenPositions() ([]*model.TokenPosition, error)
-	GetTokenTransactions(address common.Address) ([]*model.Transaction, error)
+	// GetTokenTransactions(address common.Address) ([]*model.Transaction, error)
 }
 
 type TransactionModel struct {
@@ -28,15 +18,21 @@ type TransactionModel struct {
 	PurchasePrice string
 }
 
-type tokenRepository struct{}
+type tokenRepository struct {
+	config *cfg.Config
+}
 
-func NewRepository() Repository {
-	return &tokenRepository{}
+func NewRepository(config *cfg.Config) Repository {
+	return &tokenRepository{
+		config: config,
+	}
 }
 
 var walletAddress = common.HexToAddress("0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664")
 
+/*
 func (repository *tokenRepository) GetTokenTransactions(ercAddress common.Address) ([]*model.Transaction, error) {
+
 	cfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithRegion("us-east-1"),
 		config.WithEndpointResolver(aws.EndpointResolverFunc(
@@ -78,11 +74,11 @@ func (repository *tokenRepository) GetTokenTransactions(ercAddress common.Addres
 		purchasePrice, successPurchasePrice := new(big.Int).SetString(transactionModel.PurchasePrice, 10)
 
 		if !successAmount || !successPurchasePrice {
-			return nil, errors.New("Not successful parsing bigint")
+			return nil, errors.New("not successful parsing bigint")
 		}
 
 		transactions = append(transactions, &model.Transaction{
-			TransactionId: uuid.MustParse(transactionModel.TransactionId),
+			TransactionId: common.HexToHash(transactionModel.TransactionId),
 			TokenAddress:  common.HexToAddress(transactionModel.TokenAddress),
 			WalletAddress: common.HexToAddress(transactionModel.TokenAddress),
 			Amount:        amount,
@@ -92,6 +88,7 @@ func (repository *tokenRepository) GetTokenTransactions(ercAddress common.Addres
 
 	return transactions, nil
 }
+*/
 
 // func (repository *tokenRepository) GetTokenPositions() ([]*model.TokenPosition, error) {
 // 	cfg, err := config.LoadDefaultConfig(context.Background(),
