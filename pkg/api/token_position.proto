@@ -10,6 +10,7 @@ message TokenPosition {
   bytes worth = 4;
   bytes pnl = 5;
   string pnlPercentage = 6;
+  bytes costBasis = 7;
 }
 
 message GetTokenPositionRequest {
