@@ -19,7 +19,7 @@ type PriceServer struct {
 }
 
 func (s *PriceServer) GetTokenPrice(ctx context.Context, request *api.GetTokenPriceRequest) (*api.GetTokenPriceResponse, error) {
-	address := common.BytesToAddress(request.Address)
+	address := common.HexToAddress(request.Address)
 	price, err := s.priceService.GetPrice(address)
 
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *PriceServer) GetTokenPrice(ctx context.Context, request *api.GetTokenPr
 	}
 
 	response := &api.GetTokenPriceResponse{
-		Price: price.Bytes(),
+		Price: price.String(),
 	}
 
 	return response, nil

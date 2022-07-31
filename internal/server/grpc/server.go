@@ -2,6 +2,7 @@ package grpc_server
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -74,11 +75,13 @@ func (server server) StartServer() {
 		panic(err)
 	}
 
-	client, err := ethclient.Dial("https://api.avax.network/ext/bc/C/rpc")
+	avaxClient, err := ethclient.Dial(server.config.Rpc.Avalanche)
 
 	if err != nil {
 		panic(err)
 	}
+
+	arbitrumClient, err := ethclient.Dial(server.config.Rpc.Arbitrum)
 
 	resource := resource.NewWithAttributes(
 		semconv.SchemaURL,
@@ -111,14 +114,18 @@ func (server server) StartServer() {
 	s := grpc.NewServer(grpc.ChainUnaryInterceptor(otelgrpc.UnaryServerInterceptor(), interceptors.LoggingServerInterceptor()))
 
 	token_repository := token.NewRepository(server.config)
-	price_repository := price.NewPriceRepository(server.config)
 	glpRepository := glp.NewRepository()
-	priceRepository := price.NewPriceRepository(server.config)
+	priceRepository := price.NewPriceRepository(server.config, arbitrumClient)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	glpService := glp.NewService(glpRepository)
-	transaction_service := transaction.NewTransactionService(server.config, client)
-	transaction_service.GetGlpTransactions()
-	token_service := token.NewService(server.config, token_repository, price_repository, transaction_service)
+	transaction_service := transaction.NewTransactionService(server.config, avaxClient, arbitrumClient, priceRepository)
+	transactions, _ := transaction_service.GetTracerTransactions()
+	fmt.Println(transactions)
+	token_service := token.NewService(server.config, token_repository, priceRepository, transaction_service)
 	priceService := price.NewPriceService(priceRepository)
 
 	token_server := NewTokenServer(token_service)

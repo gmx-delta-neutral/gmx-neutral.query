@@ -9,11 +9,11 @@ func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
 	return &api.TokenPosition{
 		TokenAddress:  p.TokenAddress.String(),
 		Symbol:        p.Symbol,
-		Amount:        p.Amount.Bytes(),
-		Worth:         p.Worth.Bytes(),
-		Pnl:           p.PNL.Bytes(),
+		Amount:        p.Amount.String(),
+		Worth:         p.Worth.String(),
+		Pnl:           p.PNL.String(),
 		PnlPercentage: p.PNLPercentage.String(),
-		CostBasis:     p.CostBasis.Bytes(),
+		CostBasis:     p.CostBasis.String(),
 	}
 }
 
@@ -30,10 +30,10 @@ func TokenPositionDtos(tokenPositions []*model.TokenPosition) []*api.TokenPositi
 func GlpAssetDto(p model.GlpAsset) *api.GlpAsset {
 	return &api.GlpAsset{
 		Symbol:     p.Symbol,
-		PoolAmount: p.PoolAmount.Bytes(),
-		Weight:     p.Weight.Bytes(),
-		UsdgAmount: p.UsdgAmount.Bytes(),
-		Allocation: p.Allocation.Bytes(),
+		PoolAmount: p.PoolAmount.String(),
+		Weight:     p.Weight.String(),
+		UsdgAmount: p.UsdgAmount.String(),
+		Allocation: p.Allocation.String(),
 	}
 }
 
@@ -43,9 +43,9 @@ func TransactionDto(t *model.Transaction) *api.Transaction {
 		TokenAddress:  t.TokenAddress.String(),
 		WalletAddress: t.WalletAddress.String(),
 		Symbol:        t.Symbol,
-		Amount:        t.Amount.Bytes(),
+		Amount:        t.Amount.String(),
 		Decimals:      int32(t.Decimals),
-		CostBasis:     t.CostBasis.Bytes(),
+		CostBasis:     t.CostBasis.String(),
 	}
 }
 

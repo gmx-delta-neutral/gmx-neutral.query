@@ -8,6 +8,12 @@ addresses:
   wbtc: "0x50b7545627a5162f82a992c33b87adc75187b218"
   weth: "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab"
   usdc: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e"
+  poolCommitter: "0xf52a27de6777a943f3ee19b7804f54c67bf64f72"
+  poolStateHelper: "0x1d3ac3f2De105F831B4eBeA8987a5f58B26aBA40"
+  leveragedPool: "0x3aca4f1b1791d00ebbae01d65e9739c9c886f33c"
+  shortBtcToken: "0x6e5f70E345b4aFd271491290e026dd3d34CBb9f2"
+  poolKeeperAddress: "0x051afd0b39acf4cc52c76a479ad802d0b82a8249"
+  balancerVault: "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
   priceFeed:
     avaxUsd: "0x0A77230d17318075983913bC2145DB16C7366156" 
     btcUsd: "0x2779D32d5166BAaa2B2b658333bA7e6Ec0C65743"
@@ -18,6 +24,18 @@ decimals:
   percentDivisor: 1000
 hashes:
   addLiquidity: "0x38dc38b96482be64113daffd8d464ebda93e856b70ccfc605e69ccf892ab981e"
+  createCommit: "0x04f9dae5361dfaa5b3f324fc0af5e71bcb4d76e8324ad9ce78d70496c548d503"
+  swap: "0x2170c741c41531aec20e7c107c24eecfdd15e69c9bb0a8dd37b1840b9e0b207b" 
 chainId: 43114
 defaultSlippageAmount: 30
+rpc:
+  avalanche: "https://api.avax.network/ext/bc/C/rpc"
+  arbitrum: "https://arb1.arbitrum.io/rpc"
+thirdPartyApi:
+  snowtraceApiUrl: "https://api.snowtrace.io/api"
+  arbiscanApiUrl: "https://api.arbiscan.io/api" 
+  tracerApiUrl: "https://api.tracer.finance"
+id:
+  TracerThreeLeverageShortBtc: 0x4b3 
+arbitrumNetworkId: 42161
 

@@ -18,13 +18,13 @@ type TransactionServer struct {
 }
 
 func (p *TransactionServer) GetTransactions(ctx context.Context, request *api.GetTransactionsRequest) (*api.GetTransactionsResponse, error) {
-	transactions, err := p.transactionService.GetGlpTransactions()
+	transactions, err := p.transactionService.GetTransactions()
 
 	if err != nil {
 		return nil, err
 	}
 	transactionsResponse := &api.GetTransactionsResponse{
-		Transactions: TransactionDtos(*transactions),
+		Transactions: TransactionDtos(transactions),
 	}
 
 	return transactionsResponse, nil

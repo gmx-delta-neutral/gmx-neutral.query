@@ -19,38 +19,44 @@ type Service interface {
 }
 
 type tokenService struct {
-	config             *cfg.Config
-	tokenRepository    Repository
-	priceRepository    price.Repository
-	transactionService transaction.Service
+	config                       *cfg.Config
+	tokenRepository              Repository
+	priceRepository              price.Repository
+	transactionService           transaction.Service
+	tokenPositionHandlerMappings map[string]func(*tokenService) (*model.TokenPosition, error)
 }
 
 func NewService(config *cfg.Config, tokenRepository Repository, priceRepository price.Repository, transactionService transaction.Service) Service {
+
+	var tokenPositionHandlerMappings = map[string]func(*tokenService) (*model.TokenPosition, error){
+		config.Addresses.Glp: func(service *tokenService) (*model.TokenPosition, error) {
+			return service.getGlpPosition()
+		},
+		config.Addresses.ShortBtcToken: func(service *tokenService) (*model.TokenPosition, error) {
+			return service.getShortBtcPosition()
+		},
+	}
+
 	return &tokenService{
-		config:             config,
-		tokenRepository:    tokenRepository,
-		priceRepository:    priceRepository,
-		transactionService: transactionService,
+		config:                       config,
+		tokenRepository:              tokenRepository,
+		priceRepository:              priceRepository,
+		transactionService:           transactionService,
+		tokenPositionHandlerMappings: tokenPositionHandlerMappings,
 	}
 }
-
-var glpToken = common.HexToAddress("0x01234181085565ed162a948b6a5e88758CD7c7b8")
 
 type TokenPositionHandler = func(common.Address) (*model.TokenPosition, error)
 
-var tokenPositionHandlerMappings = map[common.Address]func(*tokenService) (*model.TokenPosition, error){
-	glpToken: func(service *tokenService) (*model.TokenPosition, error) { return service.getGlpPosition(glpToken) },
-}
-
 func (service *tokenService) GetTokenPosition(tokenAddress common.Address) (*model.TokenPosition, error) {
-	if tokenPositionHandler, ok := tokenPositionHandlerMappings[tokenAddress]; ok {
+	if tokenPositionHandler, ok := service.tokenPositionHandlerMappings[tokenAddress.String()]; ok {
 		return tokenPositionHandler(service)
 	}
 
-	return nil, errors.New("Token mapping not foundd")
+	return nil, errors.New("token mapping not foundd")
 }
 
-func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model.TokenPosition, error) {
+func (service *tokenService) getGlpPosition() (*model.TokenPosition, error) {
 	glpPrice, err := service.priceRepository.GetGlpPrice()
 	if err != nil {
 		return nil, err
@@ -65,7 +71,7 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 	amount := new(big.Int)
 	totalCostBasis := new(big.Int)
 
-	for _, transaction := range *transactions {
+	for _, transaction := range transactions {
 		amount = new(big.Int).Add(amount, transaction.Amount)
 		totalCostBasis = new(big.Int).Add(totalCostBasis, transaction.CostBasis)
 	}
@@ -83,8 +89,51 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 	fmt.Printf("Pnl: %s\n", pnl)
 
 	position := &model.TokenPosition{
-		TokenAddress:  tokenAddress,
-		WalletAddress: tokenAddress,
+		TokenAddress:  common.HexToAddress(service.config.Addresses.ShortBtcToken),
+		WalletAddress: walletAddress,
+		Symbol:        "BTC",
+		Amount:        amount,
+		Worth:         worth,
+		CostBasis:     totalCostBasis,
+		PNL:           pnl,
+		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
+	}
+
+	return position, err
+}
+
+func (service *tokenService) getShortBtcPosition() (*model.TokenPosition, error) {
+	transactions, err := service.transactionService.GetTracerTransactions()
+
+	if err != nil {
+		return nil, err
+	}
+
+	amount := new(big.Int)
+	totalCostBasis := new(big.Int)
+
+	for _, transaction := range transactions {
+		amount = new(big.Int).Add(amount, transaction.Amount)
+		totalCostBasis = new(big.Int).Add(totalCostBasis, transaction.CostBasis)
+	}
+
+	price, err := service.priceRepository.GetShortBtcPrice()
+	worth := util.RemoveDecimals(new(big.Int).Mul(price, amount), service.config.Decimals.Usdc)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("How much it is worth now: %s\n", worth)
+	fmt.Printf("What is the cost basis: %s\n", totalCostBasis)
+	pnl := new(big.Int).Sub(worth, totalCostBasis)
+
+	fmt.Printf("Worth: %s\n", worth)
+	fmt.Printf("Pnl: %s\n", pnl)
+
+	position := &model.TokenPosition{
+		TokenAddress:  common.HexToAddress(service.config.Addresses.ShortBtcToken),
+		WalletAddress: common.HexToAddress(service.config.Addresses.Account),
 		Symbol:        "BTC",
 		Amount:        amount,
 		Worth:         worth,
@@ -100,7 +149,7 @@ func (service *tokenService) getGlpPosition(tokenAddress common.Address) (*model
 func (service *tokenService) GetTokenPositions() ([]*model.TokenPosition, error) {
 	tokenPositions := []*model.TokenPosition{}
 
-	for _, handler := range tokenPositionHandlerMappings {
+	for _, handler := range service.tokenPositionHandlerMappings {
 		tokenPosition, err := handler(service)
 		if err != nil {
 			return nil, err

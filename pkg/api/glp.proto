@@ -11,10 +11,10 @@ message GetGlpAssetsResponse {
 
 message GlpAsset {
     string symbol = 1; 
-    bytes poolAmount = 2;
-    bytes weight = 3;
-    bytes usdgAmount = 4;
-    bytes allocation = 5;
+    string poolAmount = 2;
+    string weight = 3;
+    string usdgAmount = 4;
+    string allocation = 5;
 }
 
 service GlpService

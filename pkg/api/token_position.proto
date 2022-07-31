@@ -6,11 +6,11 @@ option go_package = "./api";
 message TokenPosition {
   string tokenAddress = 1;
   string symbol = 2;
-  bytes amount = 3;
-  bytes worth = 4;
-  bytes pnl = 5;
+  string amount = 3;
+  string worth = 4;
+  string pnl = 5;
   string pnlPercentage = 6;
-  bytes costBasis = 7;
+  string costBasis = 7;
 }
 
 message GetTokenPositionRequest {

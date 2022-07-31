@@ -8,9 +8,9 @@ message Transaction {
     string TokenAddress     = 2; 
     string WalletAddress    = 3; 
     string Symbol           = 4;
-    bytes Amount           = 5; 
+    string Amount           = 5; 
     int32 Decimals         = 6; 
-    bytes CostBasis        = 7; 
+    string CostBasis        = 7; 
 }
 
 message GetTransactionsRequest {
