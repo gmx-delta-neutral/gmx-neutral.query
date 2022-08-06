@@ -14,6 +14,7 @@ func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
 		Pnl:           p.PNL.String(),
 		PnlPercentage: p.PNLPercentage.String(),
 		CostBasis:     p.CostBasis.String(),
+		Decimals:      p.Decimals,
 	}
 }
 

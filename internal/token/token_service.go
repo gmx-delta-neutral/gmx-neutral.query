@@ -97,6 +97,7 @@ func (service *tokenService) getGlpPosition() (*model.TokenPosition, error) {
 		CostBasis:     totalCostBasis,
 		PNL:           pnl,
 		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
+		Decimals:      int32(service.config.Decimals.Glp),
 	}
 
 	return position, err
@@ -134,12 +135,13 @@ func (service *tokenService) getShortBtcPosition() (*model.TokenPosition, error)
 	position := &model.TokenPosition{
 		TokenAddress:  common.HexToAddress(service.config.Addresses.ShortBtcToken),
 		WalletAddress: common.HexToAddress(service.config.Addresses.Account),
-		Symbol:        "BTC",
+		Symbol:        "ShortBtc3X",
 		Amount:        amount,
 		Worth:         worth,
 		CostBasis:     totalCostBasis,
 		PNL:           pnl,
 		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
+		Decimals:      int32(service.config.Id.TracerThreeLeverageShortBtc),
 	}
 
 	return position, err

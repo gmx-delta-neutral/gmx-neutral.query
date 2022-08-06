@@ -11,7 +11,9 @@ message TokenPosition {
   string pnl = 5;
   string pnlPercentage = 6;
   string costBasis = 7;
+  int32 decimals = 8;
 }
+
 
 message GetTokenPositionRequest {
   string tokenAddress = 1;

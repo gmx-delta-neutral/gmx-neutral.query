@@ -15,6 +15,7 @@ type TokenPosition struct {
 	Worth         *big.Int
 	PNL           *big.Int
 	PNLPercentage *big.Float
+	Decimals      int32
 }
 
 type ShortPosition struct {
