@@ -28,8 +28,10 @@ type Config struct {
 		Swap         string `yaml:"swap", envconfig:"SWAP_HASH"`
 	} `yaml:"hashes"`
 	Decimals struct {
-		Glp  int64 `yaml:"glp"`
-		Usdc int64 `yaml:"usdc"`
+		Glp            int64 `yaml:"glp"`
+		Usdc           int64 `yaml:"usdc"`
+		ShortBtc3X     int64 `yaml:"shortBtc3X"`
+		PercentDivisor int64 `yaml:"percentDivisor"`
 	} `yaml:"decimals"`
 	Rpc struct {
 		Avalanche string `yaml:"avalanche", envconfig:"AVALANCHE_RPC"`

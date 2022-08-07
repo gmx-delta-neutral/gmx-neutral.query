@@ -21,7 +21,8 @@ addresses:
 decimals:
   usdc: 6
   glp: 18
-  percentDivisor: 1000
+  shortBtc3X: 6
+  percentDivisor: 100000
 hashes:
   addLiquidity: "0x38dc38b96482be64113daffd8d464ebda93e856b70ccfc605e69ccf892ab981e"
   createCommit: "0x04f9dae5361dfaa5b3f324fc0af5e71bcb4d76e8324ad9ce78d70496c548d503"

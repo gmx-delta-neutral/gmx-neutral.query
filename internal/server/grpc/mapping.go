@@ -6,6 +6,15 @@ import (
 )
 
 func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
+	tokenExposure := []*api.TokenExposure{}
+
+	for _, token := range p.Exposure {
+		tokenExposure = append(tokenExposure, &api.TokenExposure{
+			Amount:   token.Amount.String(),
+			Leverage: token.Leverage,
+		})
+	}
+
 	return &api.TokenPosition{
 		TokenAddress:  p.TokenAddress.String(),
 		Symbol:        p.Symbol,
@@ -15,6 +24,7 @@ func TokenPositionDto(p *model.TokenPosition) *api.TokenPosition {
 		PnlPercentage: p.PNLPercentage.String(),
 		CostBasis:     p.CostBasis.String(),
 		Decimals:      p.Decimals,
+		TokenExposure: tokenExposure,
 	}
 }
 

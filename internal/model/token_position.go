@@ -16,6 +16,7 @@ type TokenPosition struct {
 	PNL           *big.Int
 	PNLPercentage *big.Float
 	Decimals      int32
+	Exposure      []*TokenExposure
 }
 
 type ShortPosition struct {

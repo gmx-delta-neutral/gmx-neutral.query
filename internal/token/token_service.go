@@ -2,15 +2,16 @@ package token
 
 import (
 	"errors"
-	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	cfg "github.com/gmx-delta-neutral/gmx-neutral.query/internal/config"
+	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/glp"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/model"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/price"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/transaction"
 	"github.com/gmx-delta-neutral/gmx-neutral.query/internal/util"
+	"golang.org/x/exp/slices"
 )
 
 type Service interface {
@@ -22,12 +23,12 @@ type tokenService struct {
 	config                       *cfg.Config
 	tokenRepository              Repository
 	priceRepository              price.Repository
+	glpService                   glp.Service
 	transactionService           transaction.Service
 	tokenPositionHandlerMappings map[string]func(*tokenService) (*model.TokenPosition, error)
 }
 
-func NewService(config *cfg.Config, tokenRepository Repository, priceRepository price.Repository, transactionService transaction.Service) Service {
-
+func NewService(config *cfg.Config, tokenRepository Repository, priceRepository price.Repository, transactionService transaction.Service, glpService glp.Service) Service {
 	var tokenPositionHandlerMappings = map[string]func(*tokenService) (*model.TokenPosition, error){
 		config.Addresses.Glp: func(service *tokenService) (*model.TokenPosition, error) {
 			return service.getGlpPosition()
@@ -43,6 +44,7 @@ func NewService(config *cfg.Config, tokenRepository Repository, priceRepository 
 		priceRepository:              priceRepository,
 		transactionService:           transactionService,
 		tokenPositionHandlerMappings: tokenPositionHandlerMappings,
+		glpService:                   glpService,
 	}
 }
 
@@ -76,28 +78,36 @@ func (service *tokenService) getGlpPosition() (*model.TokenPosition, error) {
 		totalCostBasis = new(big.Int).Add(totalCostBasis, transaction.CostBasis)
 	}
 
-	fmt.Printf("Cost basis:  %s\n", totalCostBasis)
-	fmt.Printf("Amount:  %s\n", amount)
-	fmt.Printf("Glp price: %s\n", glpPrice)
-
 	worth := util.RemoveDecimals(new(big.Int).Mul(amount, glpPrice), service.config.Decimals.Glp)
-	fmt.Printf("How much it is worth now: %s\n", worth)
-	fmt.Printf("What is the cost basis: %s\n", totalCostBasis)
 	pnl := new(big.Int).Sub(worth, totalCostBasis)
 
-	fmt.Printf("Worth: %s\n", worth)
-	fmt.Printf("Pnl: %s\n", pnl)
+	glpExposure, err := service.glpService.GetGlpExposure(worth)
+
+	if err != nil {
+		return nil, err
+	}
+
+	exposureTokens := []string{"WBTC", "WETH"}
+
+	filteredGlpExposure := []*model.TokenExposure{}
+
+	for _, exposure := range glpExposure {
+		if slices.Contains(exposureTokens, exposure.Symbol) {
+			filteredGlpExposure = append(filteredGlpExposure, exposure)
+		}
+	}
 
 	position := &model.TokenPosition{
-		TokenAddress:  common.HexToAddress(service.config.Addresses.ShortBtcToken),
+		TokenAddress:  common.HexToAddress(service.config.Addresses.Glp),
 		WalletAddress: walletAddress,
-		Symbol:        "BTC",
+		Symbol:        "GLP",
 		Amount:        amount,
 		Worth:         worth,
 		CostBasis:     totalCostBasis,
 		PNL:           pnl,
 		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
 		Decimals:      int32(service.config.Decimals.Glp),
+		Exposure:      filteredGlpExposure,
 	}
 
 	return position, err
@@ -125,12 +135,7 @@ func (service *tokenService) getShortBtcPosition() (*model.TokenPosition, error)
 		return nil, err
 	}
 
-	fmt.Printf("How much it is worth now: %s\n", worth)
-	fmt.Printf("What is the cost basis: %s\n", totalCostBasis)
-	pnl := new(big.Int).Sub(worth, totalCostBasis)
-
-	fmt.Printf("Worth: %s\n", worth)
-	fmt.Printf("Pnl: %s\n", pnl)
+	pn. := new(big.Int).Sub(worth, totalCostBasis)
 
 	position := &model.TokenPosition{
 		TokenAddress:  common.HexToAddress(service.config.Addresses.ShortBtcToken),
@@ -141,7 +146,7 @@ func (service *tokenService) getShortBtcPosition() (*model.TokenPosition, error)
 		CostBasis:     totalCostBasis,
 		PNL:           pnl,
 		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
-		Decimals:      int32(service.config.Id.TracerThreeLeverageShortBtc),
+		Decimals:      int32(service.config.Decimals.ShortBtc3X),
 	}
 
 	return position, err

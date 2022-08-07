@@ -3,6 +3,11 @@ syntax = "proto3";
 package gmx.neutral.query.api;
 option go_package = "./api";
 
+message TokenExposure {
+  string amount = 1;
+  double leverage = 2;
+}
+
 message TokenPosition {
   string tokenAddress = 1;
   string symbol = 2;
@@ -12,6 +17,7 @@ message TokenPosition {
   string pnlPercentage = 6;
   string costBasis = 7;
   int32 decimals = 8;
+  repeated TokenExposure tokenExposure = 9;  
 }
 
 

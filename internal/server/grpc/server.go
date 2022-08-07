@@ -121,11 +121,11 @@ func (server server) StartServer() {
 		fmt.Println(err)
 	}
 
-	glpService := glp.NewService(glpRepository)
+	glpService := glp.NewService(glpRepository, server.config)
 	transaction_service := transaction.NewTransactionService(server.config, avaxClient, arbitrumClient, priceRepository)
-	transactions, _ := transaction_service.GetTracerTransactions()
-	fmt.Println(transactions)
-	token_service := token.NewService(server.config, token_repository, priceRepository, transaction_service)
+	token_service := token.NewService(server.config, token_repository, priceRepository, transaction_service, glpService)
+	positions, err := token_service.GetTokenPositions()
+	fmt.Println(positions)
 	priceService := price.NewPriceService(priceRepository)
 
 	token_server := NewTokenServer(token_service)
