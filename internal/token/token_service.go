@@ -135,7 +135,7 @@ func (service *tokenService) getShortBtcPosition() (*model.TokenPosition, error)
 		return nil, err
 	}
 
-	pn. := new(big.Int).Sub(worth, totalCostBasis)
+	pnl := new(big.Int).Sub(worth, totalCostBasis)
 
 	position := &model.TokenPosition{
 		TokenAddress:  common.HexToAddress(service.config.Addresses.ShortBtcToken),
@@ -147,6 +147,13 @@ func (service *tokenService) getShortBtcPosition() (*model.TokenPosition, error)
 		PNL:           pnl,
 		PNLPercentage: new(big.Float).Quo(new(big.Float).SetInt(pnl), new(big.Float).SetInt(totalCostBasis)),
 		Decimals:      int32(service.config.Decimals.ShortBtc3X),
+		Exposure: []*model.TokenExposure{
+			{
+				Amount:   new(big.Int).Mul(amount, big.NewInt(3)),
+				Leverage: 3,
+				Symbol:   "ShortBtc3X",
+			},
+		},
 	}
 
 	return position, err
